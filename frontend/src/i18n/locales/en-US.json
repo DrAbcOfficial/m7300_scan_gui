@@ -1,0 +1,81 @@
+{
+  "app": {
+    "title": "Pantum Scanner",
+    "subtitle": "M7300FDN / M7300FDW scanning helper"
+  },
+  "device": {
+    "section": "Device",
+    "noDevices": "No devices yet. Click \"Add device\" to scan the network",
+    "addDevice": "Add device",
+    "rename": "Rename",
+    "delete": "Remove",
+    "selected": "Selected: {name} ({host})",
+    "addDialogTitle": "Add device",
+    "scanNow": "Scan for devices",
+    "scanning": "Scanning the network...",
+    "found": "Found {n} device(s)",
+    "noneFound": "No devices found. Check power and network, then retry",
+    "addSelected": "Add selected ({n})",
+    "close": "Close",
+    "renameDialogTitle": "Rename device",
+    "deviceName": "Device name",
+    "save": "Save",
+    "cancel": "Cancel",
+    "binaryMissing": "Command missing: {cmd}",
+    "binaryMissingHint": "Install the driver or run install.sh first"
+  },
+  "scan": {
+    "section": "Scan settings",
+    "source": "Source",
+    "sourcePlaten": "Flatbed",
+    "sourceAdf": "Auto document feeder (ADF)",
+    "sourceAdfDuplex": "ADF duplex",
+    "resolution": "Resolution",
+    "mode": "Color mode",
+    "modeColor": "Color",
+    "modeGray": "Grayscale",
+    "modeLineart": "Line art",
+    "brightness": "Brightness",
+    "contrast": "Contrast",
+    "threshold": "Threshold",
+    "region": "Scan region",
+    "regionFull": "Full A4 page",
+    "regionCustom": "Custom (mm)",
+    "tl": "Top-left",
+    "br": "Bottom-right"
+  },
+  "output": {
+    "section": "Output",
+    "format": "Format",
+    "formatPng": "PNG image",
+    "formatJpg": "JPG image",
+    "formatPdf": "PDF (merged)",
+    "formatPdfPage": "PDF (one per page)",
+    "quality": "Quality",
+    "maxPages": "Max pages",
+    "dir": "Output folder",
+    "browse": "Browse...",
+    "base": "File name",
+    "verbose": "Verbose progress",
+    "pages": "{n} pages"
+  },
+  "action": {
+    "scan": "Start scan",
+    "cancel": "Cancel",
+    "openFolder": "Open folder",
+    "openFile": "Open file",
+    "scanning": "Scanning..."
+  },
+  "result": {
+    "title": "Scan result",
+    "noFiles": "No files produced",
+    "canceled": "Canceled",
+    "failed": "Scan failed"
+  },
+  "language": "Language",
+  "status": {
+    "ready": "Ready",
+    "busy": "Scan in progress",
+    "canceled": "Canceled"
+  }
+}

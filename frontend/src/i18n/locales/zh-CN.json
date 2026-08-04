@@ -1,0 +1,81 @@
+{
+  "app": {
+    "title": "奔图扫描工具",
+    "subtitle": "M7300FDN / M7300FDW 扫描助手"
+  },
+  "device": {
+    "section": "设备",
+    "noDevices": "尚未添加设备，点击\"添加设备\"扫描局域网",
+    "addDevice": "添加设备",
+    "rename": "重命名",
+    "delete": "删除",
+    "selected": "已选择: {name} ({host})",
+    "addDialogTitle": "添加设备",
+    "scanNow": "扫描设备",
+    "scanning": "正在扫描局域网设备...",
+    "found": "发现 {n} 台设备",
+    "noneFound": "未发现设备，请检查设备电源和网络后重试",
+    "addSelected": "添加选中 ({n})",
+    "close": "关闭",
+    "renameDialogTitle": "重命名设备",
+    "deviceName": "设备名称",
+    "save": "保存",
+    "cancel": "取消",
+    "binaryMissing": "命令缺失: {cmd}",
+    "binaryMissingHint": "请先安装驱动或运行 install.sh"
+  },
+  "scan": {
+    "section": "扫描设置",
+    "source": "扫描来源",
+    "sourcePlaten": "平板",
+    "sourceAdf": "自动进纸器 (ADF)",
+    "sourceAdfDuplex": "ADF 双面",
+    "resolution": "分辨率",
+    "mode": "色彩模式",
+    "modeColor": "彩色",
+    "modeGray": "灰度",
+    "modeLineart": "黑白",
+    "brightness": "亮度",
+    "contrast": "对比度",
+    "threshold": "黑白阈值",
+    "region": "扫描区域",
+    "regionFull": "整页 A4",
+    "regionCustom": "自定义 (毫米)",
+    "tl": "左上",
+    "br": "右下"
+  },
+  "output": {
+    "section": "输出",
+    "format": "输出格式",
+    "formatPng": "PNG 图片",
+    "formatJpg": "JPG 图片",
+    "formatPdf": "PDF (合并)",
+    "formatPdfPage": "PDF (每页一个)",
+    "quality": "质量",
+    "maxPages": "最大页数",
+    "dir": "输出目录",
+    "browse": "浏览...",
+    "base": "文件名",
+    "verbose": "显示详细进度",
+    "pages": "共 {n} 页"
+  },
+  "action": {
+    "scan": "开始扫描",
+    "cancel": "取消",
+    "openFolder": "打开文件夹",
+    "openFile": "打开文件",
+    "scanning": "扫描中..."
+  },
+  "result": {
+    "title": "扫描结果",
+    "noFiles": "没有生成文件",
+    "canceled": "已取消",
+    "failed": "扫描失败"
+  },
+  "language": "界面语言",
+  "status": {
+    "ready": "就绪",
+    "busy": "扫描进行中",
+    "canceled": "已取消"
+  }
+}
