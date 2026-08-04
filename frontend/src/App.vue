@@ -203,14 +203,18 @@ async function startScan() {
     statusMsg.value = `${t('device.binaryMissing', { cmd: settings.model + '-scan' })} — ${t('device.binaryMissingHint')}`
     return
   }
-  files.value = []
-  lastPages.value = 0
   persist()
   try {
     await StartScan({ ...settings })
   } catch (e) {
     statusMsg.value = String(e)
   }
+}
+
+function mergeFiles(newFiles: string[]) {
+  const seen = new Set(files.value)
+  const fresh = newFiles.filter(f => !seen.has(f))
+  files.value = [...fresh, ...files.value]
 }
 
 function cancelScan() {
@@ -242,7 +246,7 @@ onMounted(async () => {
   EventsOn('scan:done', (r: ScanResult) => {
     running.value = false
     if (r.ok) {
-      files.value = r.files || []
+      mergeFiles(r.files || [])
       statusMsg.value = t('output.pages', { n: r.pages || (r.files || []).length })
     } else {
       statusMsg.value = r.error === 'canceled' ? t('status.canceled') : `${t('result.failed')}: ${r.error}`

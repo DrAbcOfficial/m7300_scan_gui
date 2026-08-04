@@ -79,6 +79,11 @@ func StartScan(appCtx context.Context, s Settings) error {
 	if bin == "" {
 		return fmt.Errorf("%s-scan not found", model)
 	}
+	if s.Format != "pdf" {
+		if err := os.MkdirAll(filepath.Dir(scanBasePath(s)), 0o755); err != nil {
+			return fmt.Errorf("create output folder: %w", err)
+		}
+	}
 
 	args := BuildScanArgs(s)
 	cmdLine := PreviewCommand(model, s)
@@ -164,9 +169,9 @@ func finishScan(appCtx context.Context, result ScanResult) {
 
 // collectOutputFiles lists the files produced by the scan:
 //   - merged PDF: exactly the output path
-//   - images / per-page PDF: <base>_NNNN.<ext>
+//   - images / per-page PDF: <base>_NNNN.<ext> inside the base sub-folder
 func collectOutputFiles(s Settings) []string {
-	base := filepath.Join(s.OutputDir, s.OutputBase)
+	base := scanBasePath(s)
 	if s.Format == "pdf" {
 		if st, err := os.Stat(base); err == nil && !st.IsDir() {
 			return []string{base}

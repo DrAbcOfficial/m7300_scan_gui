@@ -6,6 +6,22 @@ import (
 	"strings"
 )
 
+// scanBasePath returns the effective output base path passed to the CLI.
+// Scattered formats (png / jpg / pdf-page) are written into a sub-folder
+// named after the base so the output directory stays tidy; a merged PDF
+// stays at the output root.
+func scanBasePath(s Settings) string {
+	base := s.OutputBase
+	if base == "" {
+		base = "scan"
+	}
+	dir := s.OutputDir
+	if s.Format != "pdf" {
+		dir = filepath.Join(dir, base)
+	}
+	return filepath.Join(dir, base)
+}
+
 // BuildScanArgs converts the GUI settings into m7300fdn-scan/m7300fdw-scan
 // arguments. The semantics match the driver CLI (scanner/src/cli/tool_main.cpp).
 func BuildScanArgs(s Settings) []string {
@@ -45,11 +61,7 @@ func BuildScanArgs(s Settings) []string {
 		args = append(args, "-t", fmt.Sprintf("%d", s.Threshold))
 	}
 
-	base := s.OutputBase
-	if base == "" {
-		base = "scan"
-	}
-	args = append(args, "-o", filepath.Join(s.OutputDir, base))
+	args = append(args, "-o", scanBasePath(s))
 
 	switch s.Format {
 	case "jpg":
