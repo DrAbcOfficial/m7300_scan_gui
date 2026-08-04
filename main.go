@@ -19,9 +19,9 @@ func main() {
 	err := wails.Run(&options.App{
 		Title:     "Pantum Scanner GUI",
 		Width:     1096,
-		Height:    672,
+		Height:    540,
 		MinWidth:  920,
-		MinHeight: 588,
+		MinHeight: 470,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
