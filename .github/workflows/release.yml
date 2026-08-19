@@ -44,7 +44,7 @@ jobs:
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
 
       - name: Build ARM64 application
-        run: wails build -clean -platform linux/arm64
+        run: wails build -clean -platform linux/arm64 -tags webkit2_41
 
       - name: Package application
         run: |

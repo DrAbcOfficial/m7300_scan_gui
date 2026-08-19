@@ -46,10 +46,12 @@ go install github.com/wailsapp/wails/v2/cmd/wails@v2.13.0
 
 git clone https://github.com/DrAbcOfficial/m7300_scan_gui.git
 cd m7300_scan_gui
-wails build -platform linux/arm64
+wails build -platform linux/arm64 -tags webkit2_41
 ```
 
 The resulting executable is written to `build/bin/pantum-scan-gui`.
+
+The `webkit2_41` build tag tells Wails to link against WebKitGTK 4.1. On distributions that only provide WebKitGTK 4.0 development files, omit this tag and install the corresponding 4.0 development package instead.
 
 ## Installation
 
