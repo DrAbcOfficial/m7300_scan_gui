@@ -1,58 +1,84 @@
 # pantum-scan-gui
 
-奔图 M7300FDN / M7300FDW 网络扫描仪 GUI 工具。
+A graphical network-scanning application for Pantum M7300FDN and M7300FDW multifunction printers.
 
-基于 [Wails v2](https://wails.io) (Go + Vue 3 + vue-i18n) 构建, 自动识别设备型号并调用
-`m7300fdn-scan` / `m7300fdw-scan` 驱动 CLI, 支持中英文界面与设置记忆。
+The application is built with [Wails v2](https://wails.io), Go, Vue 3, and vue-i18n. It automatically detects the scanner model and invokes the matching `m7300fdn-scan` or `m7300fdw-scan` driver CLI. The interface is available in English and Simplified Chinese, and remembers the most recently used settings.
 
-## 功能
+## Features
 
-- **设备管理**: 点击"添加设备"打开扫描窗口,通过 WSD 协议(组播 + 广播)扫描局域网,
-  自动识别 M7300FDN / M7300FDW 设备;可多选添加,支持重命名、删除;
-  设备列表持久化,记住上次选中的设备。
-- **记住上次设置**: 所有选项保存在 `~/.config/pantum-scan-gui.json`。
-- **完整扫描参数**: 平板 / ADF / ADF 双面, 75/150/300 DPI, 彩色/灰度/黑白,
-  亮度/对比度/黑白阈值, 自定义区域 (mm), PNG/JPG/PDF(合并)/PDF(每页) ,
-  质量, 最大页数, 详细进度。
-- **执行与反馈**: 扫描过程页数进度, 可取消;完成后列出产物, 一键打开文件/文件夹。
-- **i18n**: 中文 / English, 界面内即时切换。
+- **Device management:** Discover scanners on the local network through WSD multicast and broadcast probes. Add multiple devices, rename or remove them, and remember the active device.
+- **Persistent settings:** Store all application options in `~/.config/pantum-scan-gui.json`.
+- **Complete scan controls:** Select platen, ADF, or duplex ADF input; 75, 150, or 300 DPI; color, grayscale, or line-art mode; brightness, contrast, threshold, and a custom scan area in millimeters.
+- **Multiple output formats:** Save PNG, JPEG, merged PDF, or one PDF per page. Extensionless files produced by older driver builds are automatically renamed with the correct extension.
+- **Progress and results:** Display page progress, support cancellation, list completed files, and open a file or its containing folder directly from the application.
+- **Internationalization:** Switch between English and Simplified Chinese without restarting the application.
 
-## 构建
+## Requirements
 
-要求: Go ≥ 1.18, Node ≥ 18, webkit2gtk-4.0-dev (Debian/Ubuntu/Kylin:
-`sudo apt install golang-1.22 webkit2gtk-4.0-dev libgtk-3-dev pkg-config`)。
+- Linux on ARM64, such as Kylin V10 or Ubuntu 20.04 and later.
+- The `m7300fdn-scan` or `m7300fdw-scan` driver CLI installed and available to the application.
+- A scanner with WSD (Web Services on Devices) scanning support.
+- The scanner address configured in `/etc/sane.d/m7300fdn.conf` or `/etc/sane.d/m7300fdw.conf`, or added through the application.
 
-```sh
-go install github.com/wailsapp/wails/v2/cmd/wails@latest   # 需要 ~/go/bin 在 PATH
-npm config set registry https://registry.npmmirror.com      # 国内网络可选
+For PNG output, build the scanner driver with `-DENABLE_PNG_SUPPORT=ON`.
 
-cd pantum-scan-gui
-wails build
-# 产物: build/bin/pantum-scan-gui (单文件, aarch64)
-```
+## Download
 
-## 安装 / 分发
+Prebuilt Linux ARM64 archives are published on the [GitHub Releases page](https://github.com/DrAbcOfficial/m7300_scan_gui/releases). Each release also includes a SHA-256 checksum file.
 
-```sh
-sudo ./install.sh     # 安装 GUI 到 /usr/local/bin + 桌面入口
-                      # 并优先从驱动 build2/scanner 安装带 PNG 的 m7300fdn-scan / m7300fdw-scan
-```
+The target system must provide the WebKitGTK runtime required by Wails. Package names vary by distribution and release, commonly `libwebkit2gtk-4.0` or `libwebkit2gtk-4.1`.
 
-目标机要求: Kylin V10 / Ubuntu 20.04+ 等带 `libwebkit2gtk-4.0` 运行时即可运行单二进制。
+## Build from Source
 
-## 前置条件
+The current source tree requires Go 1.25 or later, Node.js 22 or later, the Wails v2 CLI, GTK 3 development files, WebKitGTK development files, and `pkg-config`.
 
-- 已安装驱动 CLI: `m7300fdn-scan` / `m7300fdw-scan` (见 m7300fdn_driver 项目,
-  建议 `-DENABLE_PNG_SUPPORT=ON` 编译以支持 PNG 输出)。
-- 设备 IP 已配置在 `/etc/sane.d/m7300fdn.conf` 或 `m7300fdw.conf`, 或在界面手动填写。
-- 扫描仪需支持 WSD (Web Services on Devices) 扫描服务。
-
-## 开发
+On recent Ubuntu releases, install the native build dependencies with:
 
 ```sh
-wails dev    # 热重载开发
+sudo apt update
+sudo apt install libgtk-3-dev libwebkit2gtk-4.1-dev pkg-config
 ```
 
-Go 后端: `app.go`(绑定入口), `model_detect.go`(WSD 探测/conf 兜底/二进制查找),
-`scanner_runner.go`(进程执行与事件), `settings.go`(持久化), `cli_args.go`(CLI 参数构造)。
-前端: `frontend/src/App.vue` + `frontend/src/i18n/`。
+Install Wails and build the application:
+
+```sh
+go install github.com/wailsapp/wails/v2/cmd/wails@v2.13.0
+
+git clone https://github.com/DrAbcOfficial/m7300_scan_gui.git
+cd m7300_scan_gui
+wails build -platform linux/arm64
+```
+
+The resulting executable is written to `build/bin/pantum-scan-gui`.
+
+## Installation
+
+Run the included installation script from a source checkout or an extracted distribution directory:
+
+```sh
+sudo ./install.sh
+```
+
+The script installs the GUI executable and desktop entry. When a compatible driver build directory is available, it also installs the `m7300fdn-scan` and `m7300fdw-scan` binaries, preferring builds with PNG support.
+
+## Development
+
+Start the Wails development server with live frontend reloading:
+
+```sh
+wails dev
+```
+
+The Go backend is located in `backend/`:
+
+- `app.go` exposes application bindings.
+- `model_detect.go` handles WSD discovery, configuration fallback, and driver binary lookup.
+- `scanner_runner.go` runs scans and emits progress events.
+- `settings.go` persists application settings.
+- `cli_args.go` builds driver CLI arguments.
+
+The Vue frontend is located in `frontend/src/`, with translations under `frontend/src/i18n/`.
+
+## Automated Releases
+
+Pushing a version tag matching `v*` starts the GitHub Actions release workflow on an Ubuntu ARM runner. The workflow builds the Linux ARM64 executable, creates a compressed archive and SHA-256 checksum, and publishes both files to a GitHub Release.
