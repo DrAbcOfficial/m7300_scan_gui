@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -167,26 +168,73 @@ func finishScan(appCtx context.Context, result ScanResult) {
 	runtime.EventsEmit(appCtx, "scan:done", result)
 }
 
-// collectOutputFiles lists the files produced by the scan:
-//   - merged PDF: exactly the output path
-//   - images / per-page PDF: <base>_NNNN.<ext> inside the base sub-folder
+// collectOutputFiles lists the files produced by the scan and repairs output
+// names from driver builds that omitted the format suffix.
 func collectOutputFiles(s Settings) []string {
 	base := scanBasePath(s)
 	if s.Format == "pdf" {
-		if st, err := os.Stat(base); err == nil && !st.IsDir() {
-			return []string{base}
+		if file, ok := regularFile(base); ok {
+			return []string{ensureExtension(file, "pdf")}
+		}
+		if file, ok := regularFile(base + ".pdf"); ok {
+			return []string{file}
 		}
 		return nil
 	}
-	ext := "png"
-	if s.Format == "jpg" {
-		ext = "jpg"
-	} else if s.Format == "pdf-page" {
-		ext = "pdf"
+	ext := outputExtension(s.Format)
+	matches, _ := filepath.Glob(base + "_*")
+	files := make([]string, 0, len(matches))
+	seen := make(map[string]struct{}, len(matches))
+	for _, match := range matches {
+		if _, ok := regularFile(match); !ok {
+			continue
+		}
+		if filepath.Ext(match) == "" {
+			match = ensureExtension(match, ext)
+		}
+		if strings.EqualFold(filepath.Ext(match), "."+ext) {
+			key := strings.ToLower(match)
+			if _, ok := seen[key]; !ok {
+				seen[key] = struct{}{}
+				files = append(files, match)
+			}
+		}
 	}
-	matches, _ := filepath.Glob(base + "_*." + ext)
-	sort.Strings(matches)
-	return matches
+	sort.Strings(files)
+	return files
+}
+
+func outputExtension(format string) string {
+	switch format {
+	case "jpg":
+		return "jpg"
+	case "pdf", "pdf-page":
+		return "pdf"
+	default:
+		return "png"
+	}
+}
+
+func regularFile(path string) (string, bool) {
+	st, err := os.Stat(path)
+	return path, err == nil && !st.IsDir()
+}
+
+// ensureExtension renames an extensionless output when possible. If a file
+// with the desired name already exists, use that name rather than exposing an
+// extensionless path to the UI.
+func ensureExtension(path, ext string) string {
+	if filepath.Ext(path) != "" {
+		return path
+	}
+	target := path + "." + ext
+	if err := os.Rename(path, target); err == nil {
+		return target
+	}
+	if _, err := os.Stat(target); err == nil {
+		return target
+	}
+	return path
 }
 
 func atoi(s string) int {

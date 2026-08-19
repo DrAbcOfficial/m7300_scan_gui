@@ -76,6 +76,18 @@ const activeDevice = computed(() => devices.value.find(d => d.host === activeHos
 const thresholdEnabled = computed(() => settings.mode === 'lineart')
 const qualityEnabled = computed(() => settings.format !== 'png')
 
+const EXT_BY_FORMAT: Record<string, string> = {
+  png: 'png',
+  jpg: 'jpg',
+  pdf: 'pdf',
+  'pdf-page': 'pdf',
+}
+
+const outputFileName = computed(() => {
+  const base = settings.outputBase || 'scan'
+  return `${base}.${EXT_BY_FORMAT[settings.format] || 'png'}`
+})
+
 function rangeFill(value: number, min: number, max: number) {
   const pct = ((value - min) / (max - min)) * 100
   return { '--fill': `${pct}%` } as Record<string, string>
@@ -402,7 +414,10 @@ onBeforeUnmount(() => {
           <label>{{ t('output.maxPages') }}</label>
           <input v-model.number="settings.maxPages" class="num" type="number" min="1" max="5000" @change="persist" />
           <label>{{ t('output.base') }}</label>
-          <input v-model="settings.outputBase" type="text" @change="onBaseNameChange" />
+          <div class="basepair">
+            <input v-model="settings.outputBase" type="text" @change="onBaseNameChange" />
+            <span class="ext">{{ outputFileName }}</span>
+          </div>
 
           <label>{{ t('output.dir') }}</label>
           <div class="dirpair wide">
@@ -590,6 +605,9 @@ h2 {
 .sliderpair { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .sliderpair input[type="range"] { flex: 1; min-width: 60px; }
 .sliderval { min-width: 24px; text-align: right; color: var(--fd-text-secondary); font-size: 12.5px; }
+.basepair { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.basepair input { flex: 1; min-width: 0; }
+.ext { color: var(--fd-text-tertiary); font-size: 12px; white-space: nowrap; }
 .dirpair { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .dirpair input { flex: 1; min-width: 0; }
 .actions { display: flex; align-items: center; gap: 8px; }

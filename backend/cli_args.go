@@ -11,7 +11,7 @@ import (
 // named after the base so the output directory stays tidy; a merged PDF
 // stays at the output root.
 func scanBasePath(s Settings) string {
-	base := s.OutputBase
+	base := normalizedOutputBase(s.OutputBase)
 	if base == "" {
 		base = "scan"
 	}
@@ -20,6 +20,19 @@ func scanBasePath(s Settings) string {
 		dir = filepath.Join(dir, base)
 	}
 	return filepath.Join(dir, base)
+}
+
+// normalizedOutputBase keeps the user-facing value a base name. Older
+// settings files may contain a format suffix, which must not become part of
+// the per-page sequence name (for example, scan.png_0001.png).
+func normalizedOutputBase(base string) string {
+	base = strings.TrimSpace(base)
+	ext := strings.ToLower(filepath.Ext(base))
+	switch ext {
+	case ".png", ".jpg", ".jpeg", ".pdf":
+		base = strings.TrimSuffix(base, filepath.Ext(base))
+	}
+	return base
 }
 
 // BuildScanArgs converts the GUI settings into m7300fdn-scan/m7300fdw-scan
