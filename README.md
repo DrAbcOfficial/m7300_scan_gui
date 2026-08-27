@@ -24,7 +24,7 @@ For PNG output, build the scanner driver with `-DENABLE_PNG_SUPPORT=ON`.
 
 ## Download
 
-Prebuilt Linux ARM64 archives are published on the [GitHub Releases page](https://github.com/DrAbcOfficial/m7300_scan_gui/releases). Each release also includes a SHA-256 checksum file.
+Prebuilt packages are published from the [m7300_bundle](https://github.com/DrAbcOfficial/m7300_bundle) repository.
 
 The target system must provide the WebKitGTK runtime required by Wails. Package names vary by distribution and release, commonly `libwebkit2gtk-4.0` or `libwebkit2gtk-4.1`.
 
@@ -81,6 +81,10 @@ The Go backend is located in `backend/`:
 
 The Vue frontend is located in `frontend/src/`, with translations under `frontend/src/i18n/`.
 
-## Automated Releases
+## Tests
 
-Pushing a version tag matching `v*` starts the GitHub Actions release workflow on an Ubuntu ARM runner. The workflow builds the Linux ARM64 executable, creates a compressed archive and SHA-256 checksum, and publishes both files to a GitHub Release.
+```sh
+go test ./backend
+```
+
+Release packages are published from the [m7300_bundle](https://github.com/DrAbcOfficial/m7300_bundle) repository.
