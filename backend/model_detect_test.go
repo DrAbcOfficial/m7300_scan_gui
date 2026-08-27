@@ -5,6 +5,25 @@ import (
 	"testing"
 )
 
+func TestIsUsbHost(t *testing.T) {
+	if !isUsbHost("usb") || !isUsbHost("usb:1:4") {
+		t.Fatal("expected usb hosts to be detected")
+	}
+	if isUsbHost("192.168.1.8") || isUsbHost("printer.local") {
+		t.Fatal("network hosts must not be treated as USB")
+	}
+}
+
+func TestDetectModelUsbFallback(t *testing.T) {
+	info := DetectModel("usb:9:9")
+	if info.Source != "usb" || info.Host != "usb:9:9" {
+		t.Fatalf("USB fallback: %+v", info)
+	}
+	if info.Model == "" {
+		t.Fatal("USB fallback should still pick a driver model")
+	}
+}
+
 func TestBuildScanArgs(t *testing.T) {
 	s := DefaultSettings()
 	s.RegionFull = false

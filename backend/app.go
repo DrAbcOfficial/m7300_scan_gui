@@ -28,7 +28,7 @@ func (a *App) Startup(ctx context.Context) {
 	a.startup(ctx)
 }
 
-// ScanDevices discovers supported scanners on the LAN via WSD and returns them
+// ScanDevices discovers supported USB and WSD scanners and returns them
 // with a default name (device-reported model name).
 func (a *App) ScanDevices() []Device {
 	infos := DiscoverDevices()

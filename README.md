@@ -6,7 +6,7 @@ The application is built with [Wails v2](https://wails.io), Go, Vue 3, and vue-i
 
 ## Features
 
-- **Device management:** Discover scanners on the local network through WSD multicast and broadcast probes. Add multiple devices, rename or remove them, and remember the active device.
+- **Device management:** Discover USB scanners and WSD network scanners. Add multiple devices, rename or remove them, and remember the active device.
 - **Persistent settings:** Store all application options in `~/.config/pantum-scan-gui.json`.
 - **Complete scan controls:** Select platen, ADF, or duplex ADF input; 75, 150, or 300 DPI; color, grayscale, or line-art mode; brightness, contrast, threshold, and a custom scan area in millimeters.
 - **Multiple output formats:** Save PNG, JPEG, merged PDF, or one PDF per page. Extensionless files produced by older driver builds are automatically renamed with the correct extension.
@@ -17,8 +17,8 @@ The application is built with [Wails v2](https://wails.io), Go, Vue 3, and vue-i
 
 - Linux on ARM64, such as Kylin V10 or Ubuntu 20.04 and later.
 - The `m7300fdn-scan` or `m7300fdw-scan` driver CLI installed and available to the application.
-- A scanner with WSD (Web Services on Devices) scanning support.
-- The scanner address configured in `/etc/sane.d/m7300fdn.conf` or `/etc/sane.d/m7300fdw.conf`, or added through the application.
+- A scanner reachable over WSD or USB (VID `0x232B`).
+- The scanner address configured in `/etc/sane.d/m7300fdn.conf` or `/etc/sane.d/m7300fdw.conf`, or added through the application (`usb[:bus:addr]` for USB).
 
 For PNG output, build the scanner driver with `-DENABLE_PNG_SUPPORT=ON`.
 
@@ -74,7 +74,7 @@ wails dev
 The Go backend is located in `backend/`:
 
 - `app.go` exposes application bindings.
-- `model_detect.go` handles WSD discovery, configuration fallback, and driver binary lookup.
+- `model_detect.go` handles USB/WSD discovery, configuration fallback, and driver binary lookup.
 - `scanner_runner.go` runs scans and emits progress events.
 - `settings.go` persists application settings.
 - `cli_args.go` builds driver CLI arguments.

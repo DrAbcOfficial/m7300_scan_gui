@@ -202,6 +202,61 @@ func subnetHosts(ipn *net.IPNet, limit int) []net.IP {
 
 const maxSubnetSweep = 1024 // cap for hosts probed per interface
 
+func isUsbHost(host string) bool {
+	return host == "usb" || strings.HasPrefix(host, "usb:")
+}
+
+func readSysfsTrim(path string) string {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(string(data))
+}
+
+// DiscoverUsbDevices lists Pantum USB scanners (VID 0x232B) from sysfs.
+func DiscoverUsbDevices() []ModelInfo {
+	entries, err := os.ReadDir("/sys/bus/usb/devices")
+	if err != nil {
+		return nil
+	}
+	out := []ModelInfo{}
+	seen := map[string]bool{}
+	for _, entry := range entries {
+		dir := filepath.Join("/sys/bus/usb/devices", entry.Name())
+		if strings.ToLower(readSysfsTrim(filepath.Join(dir, "idVendor"))) != "232b" {
+			continue
+		}
+		bus := readSysfsTrim(filepath.Join(dir, "busnum"))
+		addr := readSysfsTrim(filepath.Join(dir, "devnum"))
+		if bus == "" || addr == "" {
+			continue
+		}
+		host := "usb:" + bus + ":" + addr
+		if seen[host] {
+			continue
+		}
+		seen[host] = true
+		product := readSysfsTrim(filepath.Join(dir, "product"))
+		model := modelFromName(product)
+		if model == "" {
+			model = "m7300fdn"
+		}
+		name := product
+		if name == "" {
+			name = "Pantum USB scanner"
+		}
+		out = append(out, ModelInfo{
+			Model:     model,
+			ModelName: name,
+			Host:      host,
+			Source:    "usb",
+		})
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].Host < out[j].Host })
+	return out
+}
+
 // DiscoverDevices scans the local network with WSD Probes: multicast and
 // broadcast first, then a unicast sweep of every host in each local IPv4
 // subnet (netmask taken dynamically from the interface itself). Every device
@@ -292,6 +347,7 @@ func DiscoverDevices() []ModelInfo {
 	}
 
 	out := collectSupportedDevices(found)
+	out = append(out, DiscoverUsbDevices()...)
 
 	// Fallback: probe hosts from the SANE config files unicast.
 	if len(out) == 0 {
@@ -395,6 +451,21 @@ func readConfHosts(model string) []string {
 //
 // Returns a ModelInfo with Source reflecting how it was identified.
 func DetectModel(host string) ModelInfo {
+	if isUsbHost(host) {
+		for _, usb := range DiscoverUsbDevices() {
+			if host == "usb" || usb.Host == host {
+				usb.Host = host
+				return usb
+			}
+		}
+		return ModelInfo{
+			Model:     "m7300fdn",
+			ModelName: "Pantum USB scanner",
+			Host:      host,
+			Source:    "usb",
+		}
+	}
+
 	hosts := []string{}
 	if host != "" {
 		hosts = append(hosts, host)

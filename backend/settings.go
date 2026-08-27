@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 )
 
-// Device is a saved scanner discovered via WSD or added manually.
+// Device is a saved scanner discovered via WSD/USB or added manually.
 type Device struct {
 	Name  string `json:"name"`  // user-visible name
-	Host  string `json:"host"`  // IP address
+	Host  string `json:"host"`  // IP address or usb[:bus:addr]
 	Model string `json:"model"` // m7300fdn | m7300fdw
 }
 
