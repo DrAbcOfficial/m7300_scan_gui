@@ -6,6 +6,7 @@
   "device": {
     "section": "设备",
     "noDevices": "尚未添加设备，点击\"添加设备\"扫描 USB 和局域网",
+    "choose": "选择设备",
     "addDevice": "添加设备",
     "rename": "重命名",
     "delete": "删除",

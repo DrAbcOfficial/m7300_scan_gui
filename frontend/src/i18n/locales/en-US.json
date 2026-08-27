@@ -6,6 +6,7 @@
   "device": {
     "section": "Device",
     "noDevices": "No devices yet. Click \"Add device\" to scan USB and the network",
+    "choose": "Choose a device",
     "addDevice": "Add device",
     "rename": "Rename",
     "delete": "Remove",
